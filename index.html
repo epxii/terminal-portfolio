@@ -13,6 +13,7 @@
       white-space: pre-wrap;
       overflow-y: auto;
       max-height: 100vh;
+      text-shadow: 0 0 5px #00ff9f, 0 0 10px #00ff9f;
     }
 
     .line {
@@ -26,6 +27,7 @@
 
     .dim {
       color: #009e72;
+      text-shadow: 0 0 5px #00ff9f, 0 0 10px #00ff9f;
     }
 
     .section {
@@ -49,7 +51,8 @@
       animation: flicker 2s infinite;
     }
 
-    .startup-screen {
+    .startup-screen,
+    .click-to-begin {
       position: fixed;
       top: 0;
       left: 0;
@@ -63,20 +66,28 @@
       justify-content: center;
       z-index: 1000;
       font-family: "Courier New", Courier, monospace;
+      text-shadow: 0 0 5px #00ff9f, 0 0 10px #00ff9f;
+      cursor: pointer;
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
   </style>
-  <audio id="ambientHum" src="https://www.myinstants.com/media/sounds/computer-hum.mp3" preload="auto" loop></audio>
-<audio id="ambientHum" src="https://www.myinstants.com/media/sounds/tv-static-low.mp3" preload="auto" loop></audio>
+</head>
 <body>
+  <!-- Screens -->
+  <div class="click-to-begin" id="clickToBegin">click to begin execution</div>
+  <div class="startup-screen flicker hidden" id="startupScreen">booting epifanio.exe...</div>
+
+  <!-- Audio -->
+  <audio id="ambientHum" src="https://www.myinstants.com/media/sounds/tv-static-low.mp3" preload="auto" loop></audio>
   <audio id="keySound" src="https://www.myinstants.com/media/sounds/keyboard-typing.mp3" preload="auto"></audio>
   <audio id="bootSound" src="https://www.myinstants.com/media/sounds/mac-startup.mp3" preload="auto"></audio>
+  <audio id="keySoundAlt" src="https://www.myinstants.com/media/sounds/keyboard_typing.mp3" preload="auto"></audio>
+  <audio id="keySoundThird" src="https://www.myinstants.com/media/sounds/mechanical-keyboard.mp3" preload="auto"></audio>
 
-  <div class="startup-screen flicker" id="startupScreen">booting epifanio.exe...</div>
-
+  <!-- Terminal -->
   <div id="terminal">
     <div class="line">~/projects/portfolio/epifanio.exe</div>
     <div class="line">$ run epifanio.exe</div>
@@ -124,40 +135,45 @@
   </div>
 
   <script>
-    window.addEventListener("load", () => {
+    document.getElementById("clickToBegin").addEventListener("click", () => {
+      const clickScreen = document.getElementById("clickToBegin");
+      const startupScreen = document.getElementById("startupScreen");
       const ambientHum = document.getElementById("ambientHum");
+      const bootSound = document.getElementById("bootSound");
+
+      clickScreen.classList.add("hidden");
+      startupScreen.classList.remove("hidden");
+
       ambientHum.volume = 0.3;
       ambientHum.play().catch(e => console.warn("Ambient autoplay blocked:", e));
-      const bootSound = document.getElementById("bootSound");
-      const linesList = document.querySelectorAll(".line");
-      const startupScreen = document.getElementById("startupScreen");
-
       bootSound.play().catch(e => console.warn("Autoplay blocked:", e));
 
       setTimeout(() => {
         startupScreen.classList.add("hidden");
 
-        let delay = 0;
+        const linesList = document.querySelectorAll(".line");
         const keySound = document.getElementById("keySound");
         const keySoundAlt = document.getElementById("keySoundAlt");
         const keySoundThird = document.getElementById("keySoundThird");
-      linesList.forEach((line) => {
-        const text = line.textContent;
-        line.textContent = "";
+
+        let delay = 0;
+        linesList.forEach((line) => {
+          const text = line.textContent;
+          line.textContent = "";
           setTimeout(() => {
             line.style.display = "block";
             let i = 0;
-            keySound.currentTime = 0;
-              keySound.currentTime = 0.15;
-              keySound.playbackRate = 1 + Math.random() * 1.5;
-              keySound.play();
-              keySoundAlt.currentTime = 0.1;
-              keySoundAlt.playbackRate = 1 + Math.random() * 1.5;
-              keySoundAlt.play();
-              keySoundThird.currentTime = 0.15;
-              keySoundThird.playbackRate = 1 + Math.random() * 1.5;
-              keySoundThird.play();
-              const interval = setInterval(() => {
+            keySound.currentTime = 0.15;
+            keySound.playbackRate = 1 + Math.random() * 1.5;
+            keySound.play();
+            keySoundAlt.currentTime = 0.1;
+            keySoundAlt.playbackRate = 1 + Math.random() * 1.5;
+            keySoundAlt.play();
+            keySoundThird.currentTime = 0.15;
+            keySoundThird.playbackRate = 1 + Math.random() * 1.5;
+            keySoundThird.play();
+
+            const interval = setInterval(() => {
               line.textContent += text[i];
               i++;
               if (i === text.length) {
@@ -173,7 +189,5 @@
       }, 2500);
     });
   </script>
-  <audio id="keySoundAlt" src="https://www.myinstants.com/media/sounds/keyboard_typing.mp3" preload="auto"></audio>
-
-  <audio id="keySoundThird" src="https://www.myinstants.com/media/sounds/mechanical-keyboard.mp3" preload="auto"></audio>
+</body>
 </html>
